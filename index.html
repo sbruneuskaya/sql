@@ -22,14 +22,33 @@
 <body>
 
 <h1>Execute SQL Query</h1>
-<textarea id="sqlQuery" rows="4" cols="50" placeholder="your sql query..."></textarea><br><br>
+<textarea id="sqlQuery" rows="4" cols="50" placeholder="Enter your SQL query..."></textarea><br><br>
 <button onclick="executeQuery()">Execute Query</button>
 
 <div id="result"></div>
 
 <script>
+    function isDangerousQuery(query) {
+        const dangerousKeywords = [
+            'drop', 'delete', 'truncate', 'alter'
+        ];
+
+        const lowerQuery = query.toLowerCase();
+
+        for (let keyword of dangerousKeywords) {
+            if (lowerQuery.includes(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function executeQuery() {
         const query = document.getElementById('sqlQuery').value;
+        if (isDangerousQuery(query)) {
+            alert('не удаляйте мою таблицу)');
+            return;
+        }
 
         fetch('/getdatafromdb', {
             method: 'POST',
@@ -67,5 +86,6 @@
             });
     }
 </script>
+
 </body>
 </html>
