@@ -5,10 +5,11 @@ const app = express()
 const cors = require('cors');
 const PORT =  8000;
 
+
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: '64.23.160.168',
     user: 'root',
-    password: '',
+    password: 'secret',
     database: 'brunadb'
 });
 
