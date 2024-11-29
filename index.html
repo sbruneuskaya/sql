@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLExecutor</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Execute SQL Query</h1>
+<textarea id="sqlQuery" rows="4" cols="50" placeholder="your sql query..."></textarea><br><br>
+<button onclick="executeQuery()">Execute Query</button>
+
+<div id="result"></div>
+
+<script>
+    function executeQuery() {
+        const query = document.getElementById('sqlQuery').value;
+
+        fetch('/getdatafromdb', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query })
+        })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '';
+
+                if (data.type === 'select') {
+                    let table = '<table><thead><tr>';
+                    data.columns.forEach(col => {
+                        table += `<th>${col}</th>`;
+                    });
+                    table += '</tr></thead><tbody>';
+                    data.rows.forEach(row => {
+                        table += '<tr>';
+                        data.columns.forEach(col => {
+                            table += `<td>${row[col]}</td>`;
+                        });
+                        table += '</tr>';
+                    });
+                    table += '</tbody></table>';
+                    resultDiv.innerHTML = table;
+                } else if (data.type === 'update') {
+                    resultDiv.innerHTML = `<p>${data.affectedRows} rows changed</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+</body>
+</html>
