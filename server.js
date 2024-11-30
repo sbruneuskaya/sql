@@ -13,13 +13,6 @@ const db = mysql.createConnection({
     database: 'brunadb'
 });
 
-// const db = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'root',
-//     password: '',
-//     database: 'brunadb'
-// });
-
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -33,7 +26,7 @@ app.post('/getdatafromdb', (req, res) => {
 
     db.query(query, (err, results, fields) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            return res.status(500).send('error: ' + err.message);
         }
 
         if (query.trim().toLowerCase().startsWith('select')) {
@@ -43,16 +36,6 @@ app.post('/getdatafromdb', (req, res) => {
             // Если это мод-й запрос, а не селект
             res.json({ type: 'update', affectedRows: results.affectedRows });
         }
-    });
-});
-
-app.post('/databases', (req, res) => {
-    db.query('SHOW DATABASES;', (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        const databases = results.map(row => row.Database);
-        res.json(databases);
     });
 });
 
